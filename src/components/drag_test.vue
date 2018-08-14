@@ -56,7 +56,7 @@
           <div ref="contentBox" class="contentBox" :style="contentBoxCss" @dragenter="myElDragenter" @dragover="myElDragover" @drop="myElDrop">
             <!-- <div style="width:100px;height:300px;border:1px yellow solid;">dsdfds dlf dskf</div> -->
             <div v-for="item in myElArray" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
-              <span v-if="item.type==1">item.name<!-- 文字 --></span>
+              <span v-if="item.type==1">{{item.name}}<!-- 文字 --></span>
             </div>
             <div v-for="item in myElArray" :style="item.focus.css" @mousedown="myElMouseDown($event,item.focus.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
               
@@ -112,10 +112,10 @@
         myElZindex:0,
 
         myElObjCss:{},
-        myElArray:[
+        myElArray:[ //type:1文字 2按钮 3图像
           {
             name:'bt1',
-            disabled:true,
+            type:2,
             css:{
               backgroundColor:'#ddd',
               border:'1px #aaa solid',
@@ -128,7 +128,6 @@
             },
             focus:{
               name:'bt1-focus',
-              disabled:true,
               css:{
                 border:'2px #aaa solid',
                 width:200+'px',
@@ -141,8 +140,8 @@
             }
           },
           {
-            name:'bt2',
-            disabled:true,
+            name:'欢迎是东方大陆十分艰苦拉萨的发',
+            type:1,
             css:{
               backgroundColor:'#666',
               border:'1px #aaa solid',
@@ -155,7 +154,6 @@
             },
             focus:{
               name:'bt2-focus',
-              disabled:true,
               css:{
                 border:'2px #aaa solid',
                 width:200+'px',
