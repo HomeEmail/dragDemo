@@ -35,6 +35,22 @@
       <div style="height:10px;"></div>
 
       <el-button @click="resetContentBoxPosition">重置</el-button>
+      <div style="height:10px;"></div>
+
+      <el-upload
+        class="upload-demo"
+        action="https://jsonplaceholder.typicode.com/posts/"
+        :on-preview="handlePreview"
+        :on-remove="handleRemove"
+        :before-remove="beforeRemove"
+        multiple
+        :limit="1"
+        :on-exceed="handleExceed"
+        :file-list="fileList">
+        <el-button size="small" type="primary">上传底图</el-button>
+        <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+      </el-upload>
+
       <div style="height:20px;"></div>
 
       <div style="line-height:30px;font-size:14px;color:#666;margin-bottom: 10px;border-bottom: 1px #ddd solid;">组件列表:</div>
@@ -55,12 +71,16 @@
         <div ref="contentWrapper" :class="{allowDrag:!this.contentBoxIsAllowMove}" :style="contentWrapperCss">
           <div ref="contentBox" class="contentBox" :style="contentBoxCss" @dragenter="myElDragenter" @dragover="myElDragover" @drop="myElDrop">
             <!-- <div style="width:100px;height:300px;border:1px yellow solid;">dsdfds dlf dskf</div> -->
-            <div v-for="item in myElArray" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
-              <span v-if="item.type==1">{{item.name}}<!-- 文字 --></span>
+            <div v-for="item in myElArray" v-if="item.type!=1" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
+              <img :src="item.img" style="display:none;" @load="myElImgLoad($event,item)" />
             </div>
-            <div v-for="item in myElArray" :style="item.focus.css" @mousedown="myElMouseDown($event,item.focus.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
               
+            <div v-for="item in myElArray" v-if="item.type==1" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">{{item.name}}<!-- 文字 --><img :src="item.img" style="display:none;" @load="myElImgLoad($event,item)" /></div>
+
+            <div v-for="item in myElArray" :style="item.focus.css" @mousedown="myElMouseDown($event,item.focus.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
+              <img :src="item.focus.img" style="display:none;" @load="myElImgLoad($event,item.focus)" />
             </div>
+            
           </div>
         </div>
       </div>
@@ -111,16 +131,28 @@
         myElLeft:0,
         myElZindex:0,
 
+        fileList: [
+          //{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
+        ],
+
+        contentBoxBgImg: 'http://172.16.146.19/images/bg.jpg',//'http://172.16.146.19/images/bg.jpg',
+
         myElObjCss:{},
         myElArray:[ //type:1文字 2按钮 3图像
           {
             name:'bt1',
             type:2,
+            img:'http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg',
+            imgW:0,//图片实际原始大小
+            imgH:0,//图片实际原始大小
+            href:'',
             css:{
-              backgroundColor:'#ddd',
-              border:'1px #aaa solid',
-              width:200+'px',
-              height:300+'px',
+              background:'url(http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg) no-repeat',
+              backgroundColor:'#66b1ff2e',
+              backgroundSize:'100% 100%',
+              border:'0px #aaa solid',
+              width:0+'px',
+              height:0+'px',
               top:30+'px',
               left:200+'px',
               visibility:'visible',
@@ -128,10 +160,16 @@
             },
             focus:{
               name:'bt1-focus',
+              img:'http://172.16.146.19/images/210x296.png',
+              imgW:0,//图片实际原始大小
+              imgH:0,//图片实际原始大小
               css:{
-                border:'2px #aaa solid',
-                width:200+'px',
-                height:300+'px',
+                background:'url(http://172.16.146.19/images/210x296.png) no-repeat',
+                backgroundColor:'#7202e92e',
+                backgroundSize:'100% 100%',
+                border:'0px #aaa solid',
+                width:0+'px',
+                height:0+'px',
                 top:126+'px',
                 left:196+'px',
                 visibility:'visible',
@@ -142,9 +180,15 @@
           {
             name:'欢迎是东方大陆十分艰苦拉萨的发',
             type:1,
+            img:'',
+            imgW:0,//图片实际原始大小
+            imgH:0,//图片实际原始大小
+            href:'',
             css:{
-              backgroundColor:'#666',
-              border:'1px #aaa solid',
+              background:'transparent',
+              backgroundColor:'#66b1ff2e',
+              backgroundSize:'100% 100%',
+              border:'0px #aaa solid',
               width:200+'px',
               height:300+'px',
               top:330+'px',
@@ -154,8 +198,14 @@
             },
             focus:{
               name:'bt2-focus',
+              img:'',
+              imgW:0,//图片实际原始大小
+              imgH:0,//图片实际原始大小
               css:{
-                border:'2px #aaa solid',
+                background:'transparent',
+                backgroundColor:'#7202e92e',
+                backgroundSize:'100% 100%',
+                border:'0px #aaa solid',
                 width:200+'px',
                 height:300+'px',
                 top:326+'px',
@@ -170,7 +220,7 @@
     },
     computed:{
       contentBoxCss:function(){
-        return {width:this.contentBoxWidth+'px',height:this.contentBoxHeight+'px',boxShadow: '0px 0px 10px '+this.contentBoxShadowColor,position:'relative', boxSizing: 'border-box'};
+        return {width:this.contentBoxWidth+'px',height:this.contentBoxHeight+'px',boxShadow: '0px 0px 10px '+this.contentBoxShadowColor,position:'relative', boxSizing: 'border-box',background:'url('+this.contentBoxBgImg+') no-repeat'};
       },
       contentWrapperCss:function(){
         return {padding: '10px',position: 'relative',width:(this.contentBoxWidth+30)+'px',position:'absolute',left:this.contentWrapperLeft+'px',top:this.contentWrapperTop+'px', boxSizing: 'border-box',cursor: this.contentBoxIsAllowMove?'-webkit-grab':'default',transform: 'scale('+this.contentWrapperScale+','+this.contentWrapperScale+')'};
@@ -180,6 +230,18 @@
       },
     },
     methods: {
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
       myElClick(e){
         console.log('myElClick:',e);
       },
@@ -228,6 +290,17 @@
         this.contentWrapperTopNew=0;
         this.contentWrapperLeftNew=0;
         this.contentWrapperScale=1;
+      },
+
+      myElImgLoad(e,obj){
+        console.log('myElImgLoad:',e,obj,e.target.width,e.target.height);
+        obj.imgW=e.target.width;
+        obj.imgH=e.target.height;
+        if(parseInt(obj.css.width,10)<=0){ //新加入的高宽重置为实际原始高宽
+          obj.css.width=obj.imgW+'px';
+          obj.css.height=obj.imgH+'px';
+        }
+        obj.css.backgroundColor='transparent';
       },
 
       myElMouseDown(e,obj){
@@ -422,6 +495,7 @@
   outline: none;
   background: transparent;
   cursor: move;
+  border: none;
 }
 .allowDrag .contentBox *:hover{
   outline: 1px #fa3737 dashed;
