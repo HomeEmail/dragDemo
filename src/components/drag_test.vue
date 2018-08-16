@@ -71,14 +71,20 @@
         <div ref="contentWrapper" :class="{allowDrag:!this.contentBoxIsAllowMove}" :style="contentWrapperCss">
           <div ref="contentBox" class="contentBox" :style="contentBoxCss" @dragenter="myElDragenter" @dragover="myElDragover" @drop="myElDrop">
             <!-- <div style="width:100px;height:300px;border:1px yellow solid;">dsdfds dlf dskf</div> -->
-            <div v-for="item in myElArray" v-if="item.type!=1" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
-              <img :src="item.img" style="display:none;" @load="myElImgLoad($event,item)" />
+            <div v-for="(item,index) in myElArrayCss" v-if="item.type!=1" :style="item.css" @mousedown="myElMouseDown($event,myElArray[index],index)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
+              <img :src="item.img" style="display:none;" @error="myElImgError($event,myElArray[index])" @load="myElImgLoad($event,myElArray[index])" />
+              <input type="text" style="width:100%;height:100%;opacity:0;" @keyup.up="myElKeyUp($event,myElArray[index])" @keyup.down="myElKeyDown($event,myElArray[index])" @keyup.left="myElKeyLeft($event,myElArray[index])" @keyup.right="myElKeyRight($event,myElArray[index])" />
             </div>
               
-            <div v-for="item in myElArray" v-if="item.type==1" :style="item.css" @mousedown="myElMouseDown($event,item.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">{{item.name}}<!-- 文字 --><img :src="item.img" style="display:none;" @load="myElImgLoad($event,item)" /></div>
+            <div v-for="(item,index) in myElArrayCss" v-if="item.type==1" :style="item.css" @mousedown="myElMouseDown($event,myElArray[index],index)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
+              {{item.name}}<!-- 文字 -->
+              <img :src="item.img" style="display:none;" @error="myElImgError($event,myElArray[index])" @load="myElImgLoad($event,myElArray[index])" />
+              <input type="text" style="width:100%;height:100%;opacity:0;" @keyup.up="myElKeyUp($event,myElArray[index])" @keyup.down="myElKeyDown($event,myElArray[index])" @keyup.left="myElKeyLeft($event,myElArray[index])" @keyup.right="myElKeyRight($event,myElArray[index])" />
+            </div>
 
-            <div v-for="item in myElArray" :style="item.focus.css" @mousedown="myElMouseDown($event,item.focus.css)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
-              <img :src="item.focus.img" style="display:none;" @load="myElImgLoad($event,item.focus)" />
+            <div v-for="(item,index) in myElArrayCss" :style="item.focus.css" @mousedown="myElMouseDown($event,myElArray[index].focus,index)" @mouseup="myElMouseUp" @mousemove="myElMouseMove" @mouseout="myElMouseOut">
+              <img :src="item.focus.img" style="display:none;" @error="myElImgError($event,myElArray[index].focus)" @load="myElImgLoad($event,myElArray[index].focus)" />
+              <input type="text" style="width:100%;height:100%;opacity:0;" @keyup.up="myElKeyUp($event,myElArray[index].focus)" @keyup.down="myElKeyDown($event,myElArray[index].focus)" @keyup.left="myElKeyLeft($event,myElArray[index].focus)" @keyup.right="myElKeyRight($event,myElArray[index].focus)" />
             </div>
             
           </div>
@@ -86,8 +92,87 @@
       </div>
 
     </el-main>
-    <el-aside class="right-aside" width="200px">
-      右边
+    <el-aside class="right-aside" width="300px">
+      <el-tabs v-model="rightTabModel" type="card" @tab-click="handleClickRightTab">
+        <el-tab-pane label="属性" name="property">
+
+          <el-form label-width="50px" v-if="!!myElObj.width" style="padding:0px 10px;">
+            <el-form-item label="宽度">
+              <el-input-number v-model="myElObj.width"></el-input-number>
+            </el-form-item>
+            <el-form-item label="高度">
+              <el-input-number v-model="myElObj.height"></el-input-number>
+            </el-form-item>
+            <el-form-item label="">
+              <el-button type="info" @click="myElImgResetWH(myElObj)">重置为图片原始高宽</el-button>
+            </el-form-item>
+            <el-form-item label="左距">
+              <el-input-number v-model="myElObj.left"></el-input-number>
+            </el-form-item>
+            <el-form-item label="顶距">
+              <el-input-number v-model="myElObj.top"></el-input-number>
+            </el-form-item>
+            <el-form-item label="层级">
+              <el-input-number v-model="myElObj.zIndex"></el-input-number>
+            </el-form-item>
+            <el-form-item label="名称">
+              <el-input type="textarea" autosize placeholder="请输入名称" v-model="myElObj.name"></el-input>
+            </el-form-item>
+            <el-form-item label="链接">
+              <el-input type="textarea" autosize placeholder="请输入链接" v-model="myElObj.href"></el-input>
+            </el-form-item>
+            <el-form-item label="图片">
+              <el-upload
+                class="upload-demo"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                :before-remove="beforeRemove"
+                multiple
+                :limit="1"
+                :on-exceed="handleExceed"
+                :file-list="fileList">
+                <el-button size="small" type="success">上传</el-button> 
+
+                <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+              </el-upload>
+             
+            </el-form-item>
+            <el-form-item label="">
+              <el-button type="primary">保存</el-button>
+            </el-form-item>
+            <el-form-item label="光标">
+              <el-button type="danger" @click="myElEnterEditFocus">{{myElEnterEditFocusBtText}}</el-button>
+            </el-form-item>
+          </el-form>
+
+          <!-- <span style="font-size:14px;color:#666;">宽:</span>
+          <el-input-number v-model="myElObj.width"></el-input-number>
+          <div style="height:10px;"></div>
+          <span style="font-size:14px;color:#666;">高:</span>
+          <el-input-number v-model="myElObj.height"></el-input-number>
+          <div style="height:10px;"></div>
+          <span style="font-size:14px;color:#666;">Left:</span>
+          <el-input-number v-model="myElObj.left"></el-input-number>
+          <div style="height:10px;"></div>
+          <span style="font-size:14px;color:#666;">Top:</span>
+          <el-input-number v-model="myElObj.top"></el-input-number>
+          <div style="height:10px;"></div> -->
+
+
+
+        </el-tab-pane>
+        <el-tab-pane label="图层" name="layer">
+          <div style="padding:0px;">
+            <div class="rightTabLayerTreeItem" v-for="(item,index) in myElArray">
+              <span class="rightTabLayerTreeItemText" @mousedown="rightTabLayerTreeItemMousedown($event,item)" @mouseup="rightTabLayerTreeItemMouseup($event,item)">{{item.name}}</span>
+              <div class="focusLayer" @mousedown="rightTabLayerTreeItemMousedown($event,item.focus)" @mouseup="rightTabLayerTreeItemMouseup($event,item.focus)"><span class="rightTabLayerTreeItemText">focus layer</span></div>
+            </div>
+              
+            
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </el-aside>
   </el-container>
 </el-container>
@@ -122,6 +207,8 @@
         contentWrapperInitLeft:0,
         contentBoxIsMoving:false,
 
+        rightTabModel:'property',
+
         myElIsMoving:false,
         myElTopNew:0,
         myElLeftNew:0,
@@ -137,82 +224,77 @@
 
         contentBoxBgImg: 'http://172.16.146.19/images/bg.jpg',//'http://172.16.146.19/images/bg.jpg',
 
-        myElObjCss:{},
+        isEditFocusMode:false,//是否进入光标编辑模式
+        myElObjIndex:0,//当前编辑的组件的下标索引
+        myElObj:{},
+        myElEnterEditFocusBtText:'进入编辑',
+
+
         myElArray:[ //type:1文字 2按钮 3图像
           {
+            id:0,
             name:'bt1',
             type:2,
             img:'http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg',
             imgW:0,//图片实际原始大小
             imgH:0,//图片实际原始大小
-            href:'',
-            css:{
-              background:'url(http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg) no-repeat',
-              backgroundColor:'#66b1ff2e',
-              backgroundSize:'100% 100%',
-              border:'0px #aaa solid',
-              width:0+'px',
-              height:0+'px',
-              top:30+'px',
-              left:200+'px',
-              visibility:'visible',
-              zIndex:1
-            },
+            borderWidth:0,
+            href:'http://www.baidu.com',
+            width:0,
+            height:0,
+            left:100,
+            top:30,
+            visibility:true,
+            zIndex:1,
+            backgroundColor:'#66b1ff2e',
+            isFocus:false,
             focus:{
               name:'bt1-focus',
               img:'http://172.16.146.19/images/210x296.png',
               imgW:0,//图片实际原始大小
               imgH:0,//图片实际原始大小
-              css:{
-                background:'url(http://172.16.146.19/images/210x296.png) no-repeat',
-                backgroundColor:'#7202e92e',
-                backgroundSize:'100% 100%',
-                border:'0px #aaa solid',
-                width:0+'px',
-                height:0+'px',
-                top:126+'px',
-                left:196+'px',
-                visibility:'visible',
-                zIndex:2
-              }
+              borderWidth:0,
+              width:0,
+              height:0,
+              left:100,
+              top:30,
+              visibility:false,
+              zIndex:2,
+              backgroundColor:'#7202e92e',
+              isFocus:true
             }
           },
           {
+            id:1,
             name:'欢迎是东方大陆十分艰苦拉萨的发',
             type:1,
             img:'',
             imgW:0,//图片实际原始大小
             imgH:0,//图片实际原始大小
+            borderWidth:0,
             href:'',
-            css:{
-              background:'transparent',
-              backgroundColor:'#66b1ff2e',
-              backgroundSize:'100% 100%',
-              border:'0px #aaa solid',
-              width:200+'px',
-              height:300+'px',
-              top:330+'px',
-              left:230+'px',
-              visibility:'visible',
-              zIndex:1
-            },
+            width:0,
+            height:0,
+            left:100,
+            top:30,
+            visibility:true,
+            zIndex:1,
+            backgroundColor:'#66b1ff2e',
+            isFocus:false,
             focus:{
               name:'bt2-focus',
               img:'',
               imgW:0,//图片实际原始大小
               imgH:0,//图片实际原始大小
-              css:{
-                background:'transparent',
-                backgroundColor:'#7202e92e',
-                backgroundSize:'100% 100%',
-                border:'0px #aaa solid',
-                width:200+'px',
-                height:300+'px',
-                top:326+'px',
-                left:296+'px',
-                visibility:'visible',
-                zIndex:2
-              }
+              borderWidth:0,
+              width:0,
+              height:0,
+              left:100,
+              top:30,
+              visibility:false,
+              zIndex:2,
+              backgroundColor:'#7202e92e',
+              isFocus:true
             }
           }
         ]
@@ -227,6 +309,44 @@
       },
       contentWrapperScaleText:function(){
         return Math.round(this.contentWrapperScale*100)+'%';
+      },
+      myElArrayCss:function(){
+          var ary=[];
+          this.myElArray.forEach(function(data){
+            ary.push({
+              type:data.type||2,
+              img:data.img||'',
+              css:{
+                background:!!data.img?'url('+data.img+') no-repeat':'transparent',
+                backgroundColor:data.backgroundColor||'#66b1ff2e',
+                backgroundSize:'100% 100%',
+                border:(data.borderWidth||0)+'px red dashed',
+                width:data.width+'px',
+                height:data.height+'px',
+                top:data.top+'px',
+                left:data.left+'px',
+                visibility:!!data.visibility?'visible':'hidden',
+                zIndex:data.zIndex
+              },
+              focus:{
+                img:data.focus.img||'',
+                css:{
+                  background:!!data.focus.img?'url('+data.focus.img+') no-repeat':'transparent',
+                  backgroundColor:data.focus.backgroundColor||'#7202e92e',
+                  backgroundSize:'100% 100%',
+                  border:(data.focus.borderWidth||0)+'px red dashed',
+                  width:data.focus.width+'px',
+                  height:data.focus.height+'px',
+                  top:data.focus.top+'px',
+                  left:data.focus.left+'px',
+                  visibility:!!data.focus.visibility?'visible':'hidden',
+                  display:!!data.focus.visibility?'block':'none',
+                  zIndex:data.focus.zIndex
+                }
+              }
+            });
+          });
+          return ary;
       },
     },
     methods: {
@@ -280,8 +400,19 @@
       myElDrop(e){
         console.log('myElDrop:',e,e.dataTransfer.getData("text"));
         console.log('x:',e.offsetX,'y:',e.offsetY);
-        
+
+        if(this.isEditFocusMode) return 0;
         if(this.myElIsMoving) return false;
+        let typeStr=e.dataTransfer.getData("text");
+        if(typeStr=='my-text'){
+          this.newMyEl(1);
+        }
+        if(typeStr=='my-button'){
+          this.newMyEl(2);
+        }
+        if(typeStr=='my-img'){
+          this.newMyEl(3);
+        }
       },
 
       resetContentBoxPosition(e){
@@ -292,20 +423,92 @@
         this.contentWrapperScale=1;
       },
 
+      newMyEl(type){
+        this.myElArray.push(
+          {
+            id:new Date().getTime(),
+            name:new Date().getTime(),
+            type:type,
+            img:'',
+            imgW:0,//图片实际原始大小
+            imgH:0,//图片实际原始大小
+            borderWidth:0,
+            href:'',
+            width:200,
+            height:200,
+            left:100,
+            top:30,
+            visibility:true,
+            zIndex:1,
+            backgroundColor:'#66b1ff2e',
+            isFocus:false,
+            focus:{
+              name:new Date().getTime()+'-focus',
+              img:'',
+              imgW:0,//图片实际原始大小
+              imgH:0,//图片实际原始大小
+              borderWidth:0,
+              width:200,
+              height:200,
+              left:150,
+              top:30,
+              visibility:false,
+              zIndex:2,
+              backgroundColor:'#7202e92e',
+              isFocus:true
+            }
+          }
+        );
+      },
+
       myElImgLoad(e,obj){
         console.log('myElImgLoad:',e,obj,e.target.width,e.target.height);
         obj.imgW=e.target.width;
         obj.imgH=e.target.height;
-        if(parseInt(obj.css.width,10)<=0){ //新加入的高宽重置为实际原始高宽
-          obj.css.width=obj.imgW+'px';
-          obj.css.height=obj.imgH+'px';
+        if(parseInt(obj.width,10)<=0){ //新加入的高宽重置为实际原始高宽
+          obj.width=obj.imgW;
+          obj.height=obj.imgH;
         }
-        obj.css.backgroundColor='transparent';
+        obj.backgroundColor='transparent';
+      },
+      myElImgResetWH(obj){
+        obj.width=obj.imgW||200;
+        obj.height=obj.imgH||200;
+      },
+      myElImgError(e,obj){
+        console.log('myElImgError:',e,obj);
+        obj.width=200;
+        obj.height=200;
       },
 
-      myElMouseDown(e,obj){
+      myElEnterEditFocus(e){
+        if(this.isEditFocusMode){
+          this.myElObj.visibility=false;
+          this.myElObj=this.myElArray[this.myElObjIndex]
+          this.isEditFocusMode=false;
+          this.myElEnterEditFocusBtText="进入编辑";
+          this.$notify.info({
+            title: '消息',
+            message: '您已退出光标编辑模式!'
+          });
+        }else{
+          this.myElObj=this.myElArray[this.myElObjIndex].focus;
+          this.myElObj.visibility=true;
+          this.isEditFocusMode=true;
+          this.myElEnterEditFocusBtText="退出编辑";
+          this.$notify.info({
+            title: '消息',
+            message: '您已进入光标编辑模式!只能编辑光标，其他功能已禁用。'
+          });
+
+        }
+      },
+
+      myElMouseDown(e,obj,index){
         if(!!this.contentBoxIsAllowMove) return 0;
-        this.myElObjCss=obj;
+        if(this.isEditFocusMode&&!!!obj.isFocus) return 0;//在光标编辑模式下，不可以对非光标组件移动
+        this.myElObjIndex=index||0;
+        this.myElObj=obj;
         this.myElIsMoving=true;
         this.myElZindex=obj.zIndex;//暂存原来的值
         obj.zIndex=99999;//暂时设置最高
@@ -326,8 +529,8 @@
           if(T==0&&L==0) return ;
           this.myElTop=this.myElTopNew+T;
           this.myElLeft=this.myElLeftNew+L;
-          this.myElObjCss.top=this.myElTop+'px';
-          this.myElObjCss.left=this.myElLeft+'px';
+          this.myElObj.top=this.myElTop;
+          this.myElObj.left=this.myElLeft;
         }
         return 0;
 
@@ -335,13 +538,49 @@
       myElMouseUp(e){
         if(!!!this.myElIsMoving) return 0;
         this.myElIsMoving=false;
-        this.myElObjCss.zIndex=this.myElZindex;//还原之前暂存的值
+        this.myElObj.zIndex=this.myElZindex;//还原之前暂存的值
         this.myElZindex=0;
-        this.myElObjCss={};
+        //this.myElObj={};
         console.log('myElMouseUp',this.myElIsMoving,e);
       },
       myElMouseOut(e){
         this.myElMouseUp(e);
+      },
+      myElKeyUp(e,obj){
+        if(!!this.contentBoxIsAllowMove) return 0;
+        console.log('myElKeyUp',e,obj);
+        obj.top-=1;
+      },
+      myElKeyDown(e,obj){
+        if(!!this.contentBoxIsAllowMove) return 0;
+        console.log('myElKeyDown',e,obj);
+        obj.top+=1;
+      },
+      myElKeyLeft(e,obj){
+        if(!!this.contentBoxIsAllowMove) return 0;
+        console.log('myElKeyLeft',e,obj);
+        obj.left-=1;
+      },
+      myElKeyRight(e,obj){
+        if(!!this.contentBoxIsAllowMove) return 0;
+        console.log('myElKeyRight',e,obj);
+        obj.left+=1;
+      },
+
+
+      handleClickRightTab(tab,e){
+        console.log('handleClickRightTab',tab,e);
+      },
+      rightTabLayerTreeItemMousedown(e,data){
+        console.log('rightTabLayerTreeItemMousedown',data);
+        data.zIndexOld=data.zIndex;
+        data.zIndex=99999;
+        data.borderWidth=2;
+      },
+      rightTabLayerTreeItemMouseup(e,data){
+        console.log('rightTabLayerTreeItemMouseup',data);
+        data.zIndex=data.zIndexOld;
+        data.borderWidth=0;
       },
       
       contentWrapperMouseMove(e){
@@ -477,7 +716,7 @@
 }
 .right-aside{
   border-left: 1px #ddd solid;
-  padding: 20px;
+  padding: 20px 0px;
   background-color: #fbfafa;
 }
 .center-main{
@@ -498,6 +737,29 @@
   border: none;
 }
 .allowDrag .contentBox *:hover{
-  outline: 1px #fa3737 dashed;
+  outline: 2px #fa3737 dashed;
 }
+
+.rightTabLayerTreeItem{
+}
+.rightTabLayerTreeItem.focusLayer{
+ 
+}
+.rightTabLayerTreeItemText{
+  display: block;
+  text-overflow:ellipsis;/*值为clip表示剪切，ellipsis时为显示省略号*/
+  overflow:hidden; 
+  white-space:nowrap;
+  background-color: #e1e1e1; 
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.rightTabLayerTreeItemText:hover,.focusLayer .rightTabLayerTreeItemText:hover{
+  background-color: #4099f54a;
+}
+.focusLayer .rightTabLayerTreeItemText{
+   background-color: #eee;
+   padding-left: 30px;
+}
+
 </style>
