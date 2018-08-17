@@ -38,15 +38,15 @@
       <div style="height:10px;"></div>
 
       <el-upload
-        class="upload-demo"
+        class="upload-bt"
         action="https://jsonplaceholder.typicode.com/posts/"
         :on-preview="handlePreview"
         :on-remove="handleRemove"
         :before-remove="beforeRemove"
-        multiple
+        :on-success="handlePageBgUploadSuccess"
         :limit="1"
         :on-exceed="handleExceed"
-        :file-list="fileList">
+        :file-list="pageBgFileList">
         <el-button size="small" type="primary">上传底图</el-button>
         <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
       </el-upload>
@@ -123,15 +123,15 @@
             </el-form-item>
             <el-form-item label="图片">
               <el-upload
-                class="upload-demo"
+                class="upload-bt"
                 action="https://jsonplaceholder.typicode.com/posts/"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :before-remove="beforeRemove"
-                multiple
+                :on-success="handleImgUploadSuccess"
                 :limit="1"
                 :on-exceed="handleExceed"
-                :file-list="fileList">
+                :file-list="myElImgFileList">
                 <el-button size="small" type="success">上传</el-button> 
 
                 <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
@@ -145,21 +145,6 @@
               <el-button type="danger" @click="myElEnterEditFocus">{{myElEnterEditFocusBtText}}</el-button>
             </el-form-item>
           </el-form>
-
-          <!-- <span style="font-size:14px;color:#666;">宽:</span>
-          <el-input-number v-model="myElObj.width"></el-input-number>
-          <div style="height:10px;"></div>
-          <span style="font-size:14px;color:#666;">高:</span>
-          <el-input-number v-model="myElObj.height"></el-input-number>
-          <div style="height:10px;"></div>
-          <span style="font-size:14px;color:#666;">Left:</span>
-          <el-input-number v-model="myElObj.left"></el-input-number>
-          <div style="height:10px;"></div>
-          <span style="font-size:14px;color:#666;">Top:</span>
-          <el-input-number v-model="myElObj.top"></el-input-number>
-          <div style="height:10px;"></div> -->
-
-
 
         </el-tab-pane>
         <el-tab-pane label="图层" name="layer">
@@ -218,9 +203,10 @@
         myElLeft:0,
         myElZindex:0,
 
-        fileList: [
+        pageBgFileList: [
           //{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}
         ],
+        myElImgFileList:[],
 
         contentBoxBgImg: 'http://172.16.146.19/images/bg.jpg',//'http://172.16.146.19/images/bg.jpg',
 
@@ -362,6 +348,14 @@
       beforeRemove(file, fileList) {
         return this.$confirm(`确定移除 ${ file.name }？`);
       },
+      handleImgUploadSuccess(res, file,fileList){
+        console.log('页面组件元素图片上传成功',res,file,fileList);
+        this.myElObj.img = file.response.data;
+      },
+      handlePageBgUploadSuccess(res, file,fileList){
+        console.log('页面底图上传成功',res,file,fileList);
+        this.contentBoxBgImg = file.response.data;
+      },
       myElClick(e){
         console.log('myElClick:',e);
       },
@@ -486,6 +480,11 @@
           this.myElObj.visibility=false;
           this.myElObj=this.myElArray[this.myElObjIndex]
           this.isEditFocusMode=false;
+          if(!!this.myElObj.img){
+            this.myElImgFileList=[{name:this.myElObj.name,url:this.myElObj.img}];
+          }else{
+            this.myElImgFileList=[];
+          }
           this.myElEnterEditFocusBtText="进入编辑";
           this.$notify.info({
             title: '消息',
@@ -495,6 +494,11 @@
           this.myElObj=this.myElArray[this.myElObjIndex].focus;
           this.myElObj.visibility=true;
           this.isEditFocusMode=true;
+          if(!!this.myElObj.img){
+            this.myElImgFileList=[{name:this.myElObj.name,url:this.myElObj.img}];
+          }else{
+            this.myElImgFileList=[];
+          }
           this.myElEnterEditFocusBtText="退出编辑";
           this.$notify.info({
             title: '消息',
@@ -509,6 +513,11 @@
         if(this.isEditFocusMode&&!!!obj.isFocus) return 0;//在光标编辑模式下，不可以对非光标组件移动
         this.myElObjIndex=index||0;
         this.myElObj=obj;
+        if(!!this.myElObj.img){
+          this.myElImgFileList=[{name:this.myElObj.name,url:this.myElObj.img}];
+        }else{
+          this.myElImgFileList=[];
+        }
         this.myElIsMoving=true;
         this.myElZindex=obj.zIndex;//暂存原来的值
         obj.zIndex=99999;//暂时设置最高
