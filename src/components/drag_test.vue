@@ -160,6 +160,12 @@
       </el-tabs>
     </el-aside>
   </el-container>
+
+  <div ref="editFocusModeTipsBox" class="el-notification" style="top: -1116px; z-index: 2015;box-shadow: 0 2px 12px 0 #409eff;left: 50%;margin-left: -165px;padding:5px 10px;">
+    <i class="el-notification__icon el-icon-info"></i>
+    <div style="padding-left:10px;"><span style="color:#ff7100;">提示: </span>您已<b>{{isEditFocusMode ? '进入':'退出'}}</b>光标编辑模式!</div>
+  </div>
+
 </el-container>
 </template>
 
@@ -394,18 +400,19 @@
       myElDrop(e){
         console.log('myElDrop:',e,e.dataTransfer.getData("text"));
         console.log('x:',e.offsetX,'y:',e.offsetY);
-
+        let left=e.offsetX;
+        let top=e.offsetY;
         if(this.isEditFocusMode) return 0;
         if(this.myElIsMoving) return false;
         let typeStr=e.dataTransfer.getData("text");
         if(typeStr=='my-text'){
-          this.newMyEl(1);
+          this.newMyEl(1,left,top);
         }
         if(typeStr=='my-button'){
-          this.newMyEl(2);
+          this.newMyEl(2,left,top);
         }
         if(typeStr=='my-img'){
-          this.newMyEl(3);
+          this.newMyEl(3,left,top);
         }
       },
 
@@ -417,7 +424,7 @@
         this.contentWrapperScale=1;
       },
 
-      newMyEl(type){
+      newMyEl(type,left,top){
         this.myElArray.push(
           {
             id:new Date().getTime(),
@@ -430,8 +437,8 @@
             href:'',
             width:200,
             height:200,
-            left:100,
-            top:30,
+            left:left||100,
+            top:top||30,
             visibility:true,
             zIndex:1,
             backgroundColor:'#66b1ff2e',
@@ -444,8 +451,8 @@
               borderWidth:0,
               width:200,
               height:200,
-              left:150,
-              top:30,
+              left:left||150,
+              top:top||30,
               visibility:false,
               zIndex:2,
               backgroundColor:'#7202e92e',
@@ -486,10 +493,13 @@
             this.myElImgFileList=[];
           }
           this.myElEnterEditFocusBtText="进入编辑";
-          this.$notify.info({
-            title: '消息',
-            message: '您已退出光标编辑模式!'
-          });
+
+          this.$refs.editFocusModeTipsBox.style.top='16px';
+          setTimeout(()=>{this.$refs.editFocusModeTipsBox.style.top='-416px';},1000);
+          // this.$notify.info({
+          //   title: '消息',
+          //   message: '您已退出光标编辑模式!'
+          // });
         }else{
           this.myElObj=this.myElArray[this.myElObjIndex].focus;
           this.myElObj.visibility=true;
@@ -500,10 +510,14 @@
             this.myElImgFileList=[];
           }
           this.myElEnterEditFocusBtText="退出编辑";
-          this.$notify.info({
-            title: '消息',
-            message: '您已进入光标编辑模式!只能编辑光标，其他功能已禁用。'
-          });
+
+          this.$refs.editFocusModeTipsBox.style.top='16px';
+         // setTimeout(()=>{this.$refs.editFocusModeTipsBox.style.top='-416px';},4000);
+
+          // this.$notify.info({
+          //   title: '消息',
+          //   message: '您已进入光标编辑模式!只能编辑光标，其他功能已禁用。'
+          // });
 
         }
       },
