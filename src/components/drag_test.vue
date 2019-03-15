@@ -223,72 +223,72 @@
 
 
         myElArray:[ //type:1文字 2按钮 3图像
-          {
-            id:0,
-            name:'bt1',
-            type:2,
-            img:'http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg',
-            imgW:0,//图片实际原始大小
-            imgH:0,//图片实际原始大小
-            borderWidth:0,
-            href:'http://www.baidu.com',
-            width:0,
-            height:0,
-            left:100,
-            top:30,
-            visibility:true,
-            zIndex:1,
-            backgroundColor:'#66b1ff2e',
-            isFocus:false,
-            focus:{
-              name:'bt1-focus',
-              img:'http://172.16.146.19/images/210x296.png',
-              imgW:0,//图片实际原始大小
-              imgH:0,//图片实际原始大小
-              borderWidth:0,
-              width:0,
-              height:0,
-              left:100,
-              top:30,
-              visibility:false,
-              zIndex:2,
-              backgroundColor:'#7202e92e',
-              isFocus:true
-            }
-          },
-          {
-            id:1,
-            name:'欢迎是东方大陆十分艰苦拉萨的发',
-            type:1,
-            img:'',
-            imgW:0,//图片实际原始大小
-            imgH:0,//图片实际原始大小
-            borderWidth:0,
-            href:'',
-            width:0,
-            height:0,
-            left:100,
-            top:30,
-            visibility:true,
-            zIndex:1,
-            backgroundColor:'#66b1ff2e',
-            isFocus:false,
-            focus:{
-              name:'bt2-focus',
-              img:'',
-              imgW:0,//图片实际原始大小
-              imgH:0,//图片实际原始大小
-              borderWidth:0,
-              width:0,
-              height:0,
-              left:100,
-              top:30,
-              visibility:false,
-              zIndex:2,
-              backgroundColor:'#7202e92e',
-              isFocus:true
-            }
-          }
+          // {
+          //   id:0,
+          //   name:'bt1',
+          //   type:2,
+          //   img:'http://172.16.146.19:81/lrts/uploadFile/image/2018/06/28/20180628100827464.jpg',
+          //   imgW:0,//图片实际原始大小
+          //   imgH:0,//图片实际原始大小
+          //   borderWidth:0,
+          //   href:'http://www.baidu.com',
+          //   width:0,
+          //   height:0,
+          //   left:100,
+          //   top:30,
+          //   visibility:true,
+          //   zIndex:1,
+          //   backgroundColor:'#66b1ff2e',
+          //   isFocus:false,
+          //   focus:{
+          //     name:'bt1-focus',
+          //     img:'http://172.16.146.19/images/210x296.png',
+          //     imgW:0,//图片实际原始大小
+          //     imgH:0,//图片实际原始大小
+          //     borderWidth:0,
+          //     width:0,
+          //     height:0,
+          //     left:100,
+          //     top:30,
+          //     visibility:false,
+          //     zIndex:2,
+          //     backgroundColor:'#7202e92e',
+          //     isFocus:true
+          //   }
+          // },
+          // {
+          //   id:1,
+          //   name:'欢迎是东方大陆十分艰苦拉萨的发',
+          //   type:1,
+          //   img:'',
+          //   imgW:0,//图片实际原始大小
+          //   imgH:0,//图片实际原始大小
+          //   borderWidth:0,
+          //   href:'',
+          //   width:0,
+          //   height:0,
+          //   left:100,
+          //   top:30,
+          //   visibility:true,
+          //   zIndex:1,
+          //   backgroundColor:'#66b1ff2e',
+          //   isFocus:false,
+          //   focus:{
+          //     name:'bt2-focus',
+          //     img:'',
+          //     imgW:0,//图片实际原始大小
+          //     imgH:0,//图片实际原始大小
+          //     borderWidth:0,
+          //     width:0,
+          //     height:0,
+          //     left:100,
+          //     top:30,
+          //     visibility:false,
+          //     zIndex:2,
+          //     backgroundColor:'#7202e92e',
+          //     isFocus:true
+          //   }
+          // }
         ]
       }
     },

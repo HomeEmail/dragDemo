@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <!-- <img src="./assets/logo.png"> -->
     <HelloWorld/>
   </div>
 </template>
 
 <script>
 //import HelloWorld from './components/HelloWorld'
-import HelloWorld from './components/drag_test'
+//import HelloWorld from './components/drag_test'
+import HelloWorld from './components/optionMul'
 export default {
   name: 'App',
   components: {
